@@ -1,0 +1,265 @@
+import mongoose from 'mongoose';
+import { serviceModelList } from '../../models/index.js';
+import { 
+  HTTP_METHOD,
+  POST, DELETE, CREATE, GET_LIST, 
+  EXPORT, GET_BY_ID, UPDATE, AGGREGATE 
+} from '../constant/routersConstant.js';
+
+export const createController = async (req, res) => {
+  try {
+    const { modelName, data } = req.body;
+    console.log("🚀 ~ createController ~ data:", data)
+
+    if (!modelName) {
+      throw new Error("Model is undefined.")
+    }
+
+    const Model = serviceModelList[modelName].collectionName;
+    const modelAttributes = Object.keys(Model.schema.paths);
+    const invalidFields = Object.keys(data).filter(field => !modelAttributes.includes(field)); // check field data == field model
+    if (invalidFields.length > 0) {
+      throw new Error(`Invalid fields: ${invalidFields.join(', ')}`);
+    }
+
+    // Kiểm tra các trường có tham chiếu đến các model khác
+    for (const field of Object.keys(data)) {
+      const attribute = Model.schema.paths[field];
+      if (attribute.references && attribute.references.model) {
+        const referencedModel = serviceModelList[attribute.references.model].collectionName;
+        const record = await referencedModel.findByPk(data[field]);
+        if (!record) {
+          throw new Error(`Referenced record not found for field '${field}'`);
+        }
+      }
+    }
+    
+    const newDataObject = new Model(data);
+    await newDataObject.save();
+    
+    res.json({ newDataObject });
+    
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
+  }
+}
+
+export const getListController = async (req, res) => {
+  try {
+    let { modelName, data } = req.body;
+    let { page = 1, perPage = 10 } = req.query;
+    page = parseInt(page);
+    page = Math.max(page, 1);
+    perPage = parseInt(perPage);
+    perPage = Math.max(perPage, 3);
+    
+    if (!modelName) {
+      throw new Error("Model is undefined.")
+    }
+    
+    const Model = serviceModelList[modelName].collectionName;
+    const modelAttributes = Object.keys(Model.schema.paths);
+    const invalidFields = [];
+    if(data) {
+      invalidFields = Object.keys(data).filter(field => !modelAttributes.includes(field)); // check field data == field model
+    }
+
+    if (invalidFields.length > 0) {
+      throw new Error(`Invalid fields: ${invalidFields.join(', ')}`);
+    }
+
+    const offset = (page - 1) * perPage;
+    const limit = parseInt(perPage);
+
+    const newDataObject = await Model.find();
+    
+    res.json({ newDataObject });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
+  }
+}
+
+export const exportController = async (req, res) => {
+  res.send({
+    message: 'exportController'
+  }
+  );
+}
+
+export const getByIdController = async (req, res) => {
+  try {
+    const { modelName, data } = req.body;
+    const { id } = req.params;
+
+    if (!modelName) {
+      throw new Error("Model is undefined.");
+    }
+
+    const Model = serviceModelList[modelName].collectionName; // truy cập vào model tương ứng
+    const modelAttributes = Object.keys(Model.rawAttributes);
+    const invalidFields = data.filter(field => !modelAttributes.includes(field));
+
+    if (invalidFields.length > 0) {
+      throw new Error(`Invalid fields: ${invalidFields.join(', ')}`);
+    }
+
+    const newDataObject = await Model.findByPk(
+      id, 
+      {
+        attributes: data
+      }
+    );
+
+    res.json({ newDataObject });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
+  }
+}
+
+export const deleteController = async (req, res) => {
+  try {
+    const { modelName } = req.body;
+    const { id } = req.params;
+
+    if (!modelName) {
+      throw new Error("Model is undefined.");
+    }
+
+    const Model = serviceModelList[modelName].collectionName;
+
+    const newDataObject = await Model.update(
+      { deleted: true },
+      { where: { id } }
+    );
+
+    res.json({ newDataObject });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
+  }
+}
+
+export const updateController = async (req, res) => {
+  try {
+    const { modelName, data } = req.body;
+    const { id } = req.params;
+
+    if (!modelName) {
+      throw new Error("Model is undefined.")
+    }
+
+    const Model = serviceModelList[modelName].collectionName;
+    const modelAttributes = Object.keys(Model.rawAttributes);
+    const invalidFields = Object.keys(data).filter(field => !modelAttributes.includes(field));
+
+    if (invalidFields.length > 0) {
+      throw new Error(`Invalid fields: ${invalidFields.join(', ')}`);
+    }
+
+    // Kiểm tra các trường có tham chiếu đến các model khác
+    for (const field of Object.keys(data)) {
+      const attribute = Model.rawAttributes[field];
+      if (attribute.references && attribute.references.model) {
+        const referencedModel = serviceModelList[attribute.references.model].collectionName;
+        const record = await referencedModel.findByPk(data[field]);
+        if (!record) {
+          throw new Error(`Referenced record not found for field '${field}'`);
+        }
+      }
+    }
+
+    const dataObject = await Model.update(
+      data,
+      { where: { id } }
+    );
+
+    res.json({ dataObject });
+    
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
+  }
+}
+
+
+export const postController = (req, res) => {
+  res.send({
+    message: 'postController'
+  }
+  );
+}
+
+export const aggregateController = (req, res) => {
+  res.send({
+    message: 'aggregateController'
+  }
+  );
+}
+
+export const API = {
+  CREATE: {
+    code: CREATE,
+    method: HTTP_METHOD.POST,
+    path: '/',
+    controller: createController,
+  },
+
+  GET_LIST: {
+    code: GET_LIST,
+    method: HTTP_METHOD.GET,
+    path: '/',
+    controller: getListController,
+  },
+
+  EXPORT: {
+    code: EXPORT,
+    method: HTTP_METHOD.GET,
+    path: '/export',
+    controller: exportController,
+  },
+
+  GET_BY_ID: {
+    code: GET_BY_ID,
+    method: HTTP_METHOD.POST,
+    path: '/:id',
+    controller: getByIdController,
+  },
+
+  UPDATE: {
+    code: UPDATE,
+    method: HTTP_METHOD.PUT,
+    path: '/:id',
+    controller: updateController,
+  },
+
+  DELETE: {
+    code: DELETE,
+    method: HTTP_METHOD.DELETE,
+    path: '/:id',
+    controller: deleteController,
+  },
+
+  POST: {
+    code: POST,
+    method: HTTP_METHOD.PATCH,
+    path: '/post/:id',
+    controller: postController,
+  },
+
+  AGGREGATE: {
+    code: AGGREGATE,
+    method: HTTP_METHOD.PATCH,
+    path: '/post/:id',
+    controller: aggregateController,
+  },
+
+};
+
+export const API_LIST = {
+  CRUD: [
+    API.CREATE,
+    // API.AGGREGATE, // [!] cause of router pipeline, "Aggregate" API" must before "GetById API"
+    API.GET_LIST,
+    API.GET_BY_ID,
+    API.UPDATE,
+    API.DELETE,
+  ],
+}
