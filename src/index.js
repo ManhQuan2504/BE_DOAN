@@ -19,7 +19,7 @@ const db = process.env.MONGO_URL;
 (async () => {
   try {
     await initConnectToDB();
-    initCreateRouter(app);
+    await initCreateRouter(app);
 
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);

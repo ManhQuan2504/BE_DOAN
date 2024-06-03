@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
+import { API_LIST } from "./controllerHelper.js";
 
-const serviceModelList = {};
+const registerModelList = (modelList) => {
+  const serviceModelList = {};
 
-export const registerModelList = async (modelList) => {
-  console.log("🚀 ~ 33333registerModelList ~ modelList:")
   if (!Array.isArray(modelList)) {
     throw new Error('modelList is not an array.');
   }
@@ -32,10 +32,8 @@ export const registerModelList = async (modelList) => {
   
   modelList.push(permissionModel)
   
-  const crossModelDataConstraint = {};
-  
   modelList.forEach((model) => {
-    const { modelName, version, data } = model;
+    const { modelName, version, data, apiList } = model;
     
     if (!modelName) {
       throw new Error('modelName is undefined.');
@@ -56,12 +54,12 @@ export const registerModelList = async (modelList) => {
       modelName,
       collectionName,
       version: version || '1',
+      apiList: apiList || API_LIST.CRUD,
       data: data,
     }
-    crossModelDataConstraint[modelName] = collectionName;
   });
   
-  return crossModelDataConstraint;
+  return serviceModelList;
 };
 
-export default serviceModelList; // bất đồng bộ nên hiện chưa có data, registerModelList chạy ngay sau cái này
+export default registerModelList; // bất đồng bộ nên hiện chưa có data, registerModelList chạy ngay sau cái này

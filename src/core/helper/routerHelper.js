@@ -1,4 +1,4 @@
-import { serviceModelList } from '../../models/index.js';
+import serviceModelList from '../../models/index.js';
 import { MODELS } from '../constant/modelConstant.js';
 import { API_LIST } from './controllerHelper.js';
 

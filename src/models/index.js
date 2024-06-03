@@ -1,4 +1,5 @@
-import { registerModelList } from '../core/helper/modelHelper.js';
+import registerModelList from '../core/helper/modelHelper.js';
+
 // import productModel from './productModel.js';
 // import permissionModel from './permissionModel.js'; 
 import roleModel from './roleModel.js';
@@ -10,6 +11,6 @@ const modelList = [
   roleModel,
   employeeModel
 ];
+const serviceModelList = registerModelList(modelList);
 
-registerModelList(modelList);
-export { default as serviceModelList } from '../core/helper/modelHelper.js';
+export default serviceModelList;

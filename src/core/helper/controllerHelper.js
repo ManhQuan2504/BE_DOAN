@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { serviceModelList } from '../../models/index.js';
+import serviceModelList from '../../models/index.js';
 import { 
   HTTP_METHOD,
   POST, DELETE, CREATE, GET_LIST, 

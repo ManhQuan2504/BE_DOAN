@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
-import { API_LIST } from "../core/helper/controllerHelper.js";
-import { HTTP_METHOD, LOGIN } from "../core/constant/routersConstant.js";
-import { loginController } from "../controller/employeeController.js"
+
+import { API_LIST } from "../core/helper/controllerHelper";
+import { HTTP_METHOD, LOGIN } from "../core/constant/routersConstant";
+
+import { loginController } from "../controller/customerController"
 
 const model = {
-  modelName: 'employees',
+  modelName: 'customers',
   version: '1',
   apiList: [
     ...API_LIST.CRUD,
@@ -15,18 +17,15 @@ const model = {
       controller: loginController,
     }
   ],
-  data: {
-    employeeCode: {
-      type: mongoose.Schema.Types.String,
-      unique: true,
-    },
 
-    employeeName: {
+  data: {
+    customerName: {
       type: mongoose.Schema.Types.String,
     },
 
     email: {
       type: mongoose.Schema.Types.String,
+      unique: true,
     },
 
     password: {
@@ -35,10 +34,6 @@ const model = {
 
     phoneNumber: {
       type: mongoose.Schema.Types.Number,
-    },
-
-    identityNumber: {
-      type: mongoose.Schema.Types.String,
     },
 
     address: {
