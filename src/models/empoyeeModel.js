@@ -1,19 +1,25 @@
 import mongoose from "mongoose";
 import { API_LIST } from "../core/helper/controllerHelper.js";
-import { HTTP_METHOD, LOGIN } from "../core/constant/routersConstant.js";
-import { loginController } from "../controller/employeeController.js"
+import { CREATE, HTTP_METHOD, LOGIN } from "../core/constant/routersConstant.js";
+import { createEmployeeController, loginController } from "../controller/employeeController.js"
 
 const model = {
   modelName: 'employees',
   version: '1',
   apiList: [
-    ...API_LIST.CRUD,
     {
       code: LOGIN,
       path: "/login/",
       method: HTTP_METHOD.POST,
       controller: loginController,
-    }
+    },
+    {
+      code: CREATE,
+      path: "/createEmployee/",
+      method: HTTP_METHOD.POST,
+      controller: createEmployeeController,
+    },
+    ...API_LIST.CRUD,
   ],
   data: {
     employeeCode: {
@@ -31,6 +37,10 @@ const model = {
 
     password: {
       type: mongoose.Schema.Types.String,
+    },
+
+    isVerified: {
+      type: mongoose.Schema.Types.Boolean,
     },
 
     phoneNumber: {
