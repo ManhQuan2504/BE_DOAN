@@ -10,6 +10,7 @@ export const createController = async (req, res) => {
   try {
     console.log("CREATE CONTROLER");
     const { modelName, data } = req.body;
+    console.log("🚀 ~ createController ~ data:", data)
 
     if (!modelName) {
       throw new Error("Model is undefined.")
@@ -34,10 +35,10 @@ export const createController = async (req, res) => {
       }
     }
 
-    const newDataObject = new Model(data);
-    await newDataObject.save();
+    const dataObject = new Model(data);
+    await dataObject.save();
 
-    res.json({ newDataObject });
+    res.json({ dataObject });
 
   } catch (error) {
     res.status(500).json({ error: error.message || 'Internal Server Error' });
@@ -48,8 +49,7 @@ export const getListController = async (req, res) => {
   try {
     console.log("GET LIST CONTROLER");
 
-    let { modelName, data } = req.body;
-    let { page = 1, perPage = 10 } = req.query;
+    let { modelName, data, page = 1, perPage = 10 } = req.query;
     page = parseInt(page);
     page = Math.max(page, 1);
     perPage = parseInt(perPage);
@@ -64,9 +64,9 @@ export const getListController = async (req, res) => {
     const offset = (page - 1) * perPage;
     const limit = parseInt(perPage);
 
-    const newDataObject = await Model.find();
+    const dataObject = await Model.find();
 
-    res.json({ newDataObject });
+    res.json({ dataObject });
   } catch (error) {
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
@@ -156,12 +156,12 @@ export const deleteController = async (req, res) => {
 
     const Model = serviceModelList[modelName].collectionName;
 
-    const newDataObject = await Model.update(
+    const dataObject = await Model.update(
       { deleted: true },
       { where: { id } }
     );
 
-    res.json({ newDataObject });
+    res.json({ dataObject });
   } catch (error) {
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }

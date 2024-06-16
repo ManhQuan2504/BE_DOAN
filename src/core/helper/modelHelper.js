@@ -29,8 +29,31 @@ const registerModelList = (modelList) => {
       },
     },
   };
+
+  const functionModel = {
+    modelName: 'functions',
+    version: '1',
+    data: {
+      clientPath: {
+        type: mongoose.Schema.Types.String,
+      },
+
+      funcName: {
+        type: mongoose.Schema.Types.String,
+      },
+
+      parentFunc: {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+
+      isParent: {
+        type: mongoose.Schema.Types.Boolean,
+      }
+    },
+  };
   
-  modelList.push(permissionModel)
+  modelList.push(permissionModel);
+  modelList.push(functionModel);
   
   modelList.forEach((model) => {
     const { modelName, version, data, apiList } = model;

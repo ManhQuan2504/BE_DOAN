@@ -22,7 +22,7 @@ const db = process.env.MONGO_URL;
     await initCreateRouter(app);
 
     app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
+      console.log(`Server is running on http://localhost`);
     });
   } catch (error) {
     console.error('Failed to start server:', error.message);

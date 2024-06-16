@@ -12,6 +12,10 @@ const model = {
     roleName: {
       type: mongoose.Schema.Types.String,
     },
+
+    permissionList: {
+      type: mongoose.Schema.Types.Array,
+    },
   },
 };
 
