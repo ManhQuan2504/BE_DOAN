@@ -26,9 +26,10 @@ export const createController = async (req, res) => {
     // Kiểm tra các trường có tham chiếu đến các model khác
     for (const field of Object.keys(data)) {
       const attribute = Model.schema.paths[field];
-      if (attribute.references && attribute.references.model) {
-        const referencedModel = serviceModelList[attribute.references.model].collectionName;
-        const record = await referencedModel.findByPk(data[field]);
+      if (attribute.options && attribute.options.ref) {
+        const referencedModelName = attribute.options.ref;
+        const referencedModel = serviceModelList[referencedModelName].collectionName;
+        const record = await referencedModel.findById(data[field]);
         if (!record) {
           throw new Error(`Referenced record not found for field '${field}'`);
         }
@@ -123,10 +124,11 @@ export const updateController = async (req, res) => {
 
     // Kiểm tra các trường có tham chiếu đến các model khác
     for (const field of Object.keys(data)) {
-      const attribute = Model.rawAttributes[field];
-      if (attribute.references && attribute.references.model) {
-        const referencedModel = serviceModelList[attribute.references.model].collectionName;
-        const record = await referencedModel.findByPk(data[field]);
+      const attribute = Model.schema.paths[field];
+      if (attribute.options && attribute.options.ref) {
+        const referencedModelName = attribute.options.ref;
+        const referencedModel = serviceModelList[referencedModelName].collectionName;
+        const record = await referencedModel.findById(data[field]);
         if (!record) {
           throw new Error(`Referenced record not found for field '${field}'`);
         }
