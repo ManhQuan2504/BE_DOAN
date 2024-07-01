@@ -48,7 +48,11 @@ const registerModelList = (modelList) => {
 
       isParent: {
         type: mongoose.Schema.Types.Boolean,
-      }
+      },
+
+      parentFuncName: {
+        type: mongoose.Schema.Types.String,
+      },
     },
   };
   
@@ -72,7 +76,9 @@ const registerModelList = (modelList) => {
     data.deleted = { type: Boolean, default: false };
     data.deletedAt = { type: Date };
 
-    const collectionName = mongoose.model(modelName, data);
+    const schema = new mongoose.Schema(data, { timestamps: true });
+    const collectionName = mongoose.model(modelName, schema);
+    // const collectionName = mongoose.model(modelName, data);
     serviceModelList[modelName] = {
       modelName,
       collectionName,

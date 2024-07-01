@@ -1,20 +1,25 @@
 import Express from "express";
 import dotenv from "dotenv";
-dotenv.config();
+import cors from "cors";
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import path, { dirname } from 'path';
 
 import { initConnectToDB } from './core/startup/startupDB.js'
-import { initCreateRouter } from './core/startup/startupRouter.js' // Sửa tên hàm này thành initCreateRouter
+import { initCreateRouter } from './core/startup/startupRouter.js'; // Sửa tên hàm này thành initCreateRouter
 
 const app = Express();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-
 const PORT = process.env.PORT || 3001;
-const db = process.env.MONGO_URL;
+
+app.use(cors());
+// app.use(Express.static(path.join(__dirname, '../uploads/')));
+app.use('/media', Express.static(path.join(__dirname, '../uploads')));
+
+app.use(Express.json());
+app.use(Express.urlencoded({ extended: true }));
 
 (async () => {
   try {
@@ -22,7 +27,7 @@ const db = process.env.MONGO_URL;
     await initCreateRouter(app);
 
     app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost`);
+      console.log(`Server is running on http://localhost:${PORT}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error.message);

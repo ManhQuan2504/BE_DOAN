@@ -10,7 +10,7 @@ export const createController = async (req, res) => {
   try {
     console.log("CREATE CONTROLER");
     const { modelName, data } = req.body;
-    console.log("🚀 ~ createController ~ data:", data)
+    console.log("🚀 ~ createController ~ req.body:", req.body)
 
     if (!modelName) {
       throw new Error("Model is undefined.")
@@ -50,7 +50,7 @@ export const getListController = async (req, res) => {
   try {
     console.log("GET LIST CONTROLER");
 
-    let { modelName, data, page = 1, perPage = 10 } = req.query;
+    let { modelName, fields, page = 1, perPage = 10 } = req.query;
     page = parseInt(page);
     page = Math.max(page, 1);
     perPage = parseInt(perPage);
@@ -65,7 +65,13 @@ export const getListController = async (req, res) => {
     const offset = (page - 1) * perPage;
     const limit = parseInt(perPage);
 
-    const dataObject = await Model.find();
+    // Nếu có fields, tạo projection object để chỉ định các trường cần lấy
+    const projection = fields ? fields.replace(/[\[\]" ]/g, '').split(',').reduce((acc, field) => {
+      acc[field.trim()] = 1;
+      return acc;
+    }, {}) : null;
+
+    const dataObject = await Model.find({ deleted: false }).sort({ createAt: -1 });
 
     res.json({ dataObject });
   } catch (error) {
@@ -84,7 +90,7 @@ export const getByIdController = async (req, res) => {
   try {
     console.log("GET BY ID CONTROLLER");
 
-    const { modelName, data } = req.body;
+    const { modelName, fields } = req.query; // Sửa 'feild' thành 'fields'
     const { id } = req.params;
 
     if (!modelName) {
@@ -93,13 +99,19 @@ export const getByIdController = async (req, res) => {
 
     const Model = serviceModelList[modelName].collectionName;
 
-    const dataGetById = await Model.findById(id, data ? data : null).exec();
+    // Nếu có fields, tạo projection object để chỉ định các trường cần lấy
+    const projection = fields ? fields.replace(/[\[\]" ]/g, '').split(',').reduce((acc, field) => {
+      acc[field.trim()] = 1;
+      return acc;
+    }, {}) : null;
 
-    if (!dataGetById) {
+    const dataObject = await Model.findById(id, projection);
+
+    if (!dataObject) {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    res.json({ dataGetById });
+    res.json({ dataObject });
   } catch (error) {
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
@@ -107,7 +119,9 @@ export const getByIdController = async (req, res) => {
 
 export const updateController = async (req, res) => {
   try {
+    console.log("UPDATE CONTROLER");
     const { modelName, data } = req.body;
+    console.log("🚀 ~ updateController ~ data:", data)
     const { id } = req.params;
 
     if (!modelName) {
@@ -115,9 +129,8 @@ export const updateController = async (req, res) => {
     }
 
     const Model = serviceModelList[modelName].collectionName;
-    const modelAttributes = Object.keys(Model.rawAttributes);
-    const invalidFields = Object.keys(data).filter(field => !modelAttributes.includes(field));
-
+    const modelAttributes = Object.keys(Model.schema.paths);
+    const invalidFields = Object.keys(data).filter(field => !modelAttributes.includes(field)); // check field data == field model
     if (invalidFields.length > 0) {
       throw new Error(`Invalid fields: ${invalidFields.join(', ')}`);
     }
@@ -135,9 +148,9 @@ export const updateController = async (req, res) => {
       }
     }
 
-    const dataObject = await Model.update(
-      data,
-      { where: { id } }
+    const dataObject = await Model.updateOne(
+      { _id: id },
+      { $set: data }
     );
 
     res.json({ dataObject });
@@ -149,7 +162,7 @@ export const updateController = async (req, res) => {
 
 export const deleteController = async (req, res) => {
   try {
-    const { modelName } = req.body;
+    const { modelName } = req.query;
     const { id } = req.params;
 
     if (!modelName) {
@@ -158,9 +171,9 @@ export const deleteController = async (req, res) => {
 
     const Model = serviceModelList[modelName].collectionName;
 
-    const dataObject = await Model.update(
-      { deleted: true },
-      { where: { id } }
+    const dataObject = await Model.updateOne(
+      { _id: id },
+      { $set: { deleted: true } }
     );
 
     res.json({ dataObject });
