@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-import { API_LIST } from "../core/helper/controllerHelper";
-import { HTTP_METHOD, LOGIN } from "../core/constant/routersConstant";
+import { API_LIST } from "../core/helper/controllerHelper.js";
+import { HTTP_METHOD, LOGIN, SIGNIN, VERIFY } from "../core/constant/routersConstant.js";
 
-import { loginController } from "../controller/customerController"
+import { loginController, signinController, verifyController } from "../controller/customerController.js"
 
 const model = {
   modelName: 'customers',
@@ -15,6 +15,18 @@ const model = {
       path: "/login/",
       method: HTTP_METHOD.POST,
       controller: loginController,
+    },
+    {
+      code: SIGNIN,
+      path: "/signin/",
+      method: HTTP_METHOD.POST,
+      controller: signinController,
+    },
+    {
+      code: VERIFY,
+      path: "/verifyMail/:id/:token",
+      method: HTTP_METHOD.GET,
+      controller: verifyController,
     }
   ],
 
@@ -38,6 +50,11 @@ const model = {
 
     address: {
       type: mongoose.Schema.Types.String,
+    },
+
+    active: {
+      type: mongoose.Schema.Types.Boolean,
+      default: false
     },
 
     idRole: {

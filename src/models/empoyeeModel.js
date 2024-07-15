@@ -55,7 +55,7 @@ const model = {
       type: mongoose.Schema.Types.String,
     },
 
-    idRole: {
+    roleId: {
       type: mongoose.Schema.Types.ObjectId,
       references: {
         model: 'roles',

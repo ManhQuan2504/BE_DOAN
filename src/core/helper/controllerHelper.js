@@ -8,17 +8,18 @@ import {
 
 export const createController = async (req, res) => {
   try {
-    console.log("CREATE CONTROLER");
+    console.log("CREATE CONTROLLER");
     const { modelName, data } = req.body;
-    console.log("🚀 ~ createController ~ req.body:", req.body)
+    console.log("🚀 ~ createController ~ req.body:", req.body);
 
     if (!modelName) {
-      throw new Error("Model is undefined.")
+      throw new Error("Model is undefined.");
     }
 
     const Model = serviceModelList[modelName].collectionName;
     const modelAttributes = Object.keys(Model.schema.paths);
-    const invalidFields = Object.keys(data).filter(field => !modelAttributes.includes(field)); // check field data == field model
+    const invalidFields = Object.keys(data).filter(field => !modelAttributes.includes(field));
+
     if (invalidFields.length > 0) {
       throw new Error(`Invalid fields: ${invalidFields.join(', ')}`);
     }
@@ -26,8 +27,10 @@ export const createController = async (req, res) => {
     // Kiểm tra các trường có tham chiếu đến các model khác
     for (const field of Object.keys(data)) {
       const attribute = Model.schema.paths[field];
-      if (attribute.options && attribute.options.ref) {
-        const referencedModelName = attribute.options.ref;
+      console.log("🚀 ~ createController ~ attribute:", attribute)
+      if (attribute?.options && attribute?.options?.ref) {
+        const referencedModelName = attribute?.options?.ref;
+        console.log("🚀 ~ createController ~ serviceModelList[referencedModelName]:", serviceModelList[referencedModelName])
         const referencedModel = serviceModelList[referencedModelName].collectionName;
         const record = await referencedModel.findById(data[field]);
         if (!record) {
@@ -40,11 +43,10 @@ export const createController = async (req, res) => {
     await dataObject.save();
 
     res.json({ dataObject });
-
   } catch (error) {
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
-}
+};
 
 export const getListController = async (req, res) => {
   try {

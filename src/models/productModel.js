@@ -4,11 +4,6 @@ const model = {
   modelName: 'products',
   version: '1',
   data: {
-    id: {
-      type: mongoose.Schema.Types.uuidv4,
-      default: () => uuidv4(),
-    },
-
     productCode: {
       type: mongoose.Schema.Types.String,
       unique: true,
@@ -17,14 +12,8 @@ const model = {
     productName: {
       type: mongoose.Schema.Types.String,
     },
-    name: {
-      type: mongoose.Schema.Types.String,
-    },
-    image: {
-      type: mongoose.Schema.Types.String,
-    },
-    unit: {
-      type: mongoose.Schema.Types.String,
+    images: {
+      type: mongoose.Schema.Types.Array,
     },
     price: {
       type: mongoose.Schema.Types.Number,
@@ -32,15 +21,23 @@ const model = {
     sold: {
       type: mongoose.Schema.Types.Number,
     },
-    productsAvailable: {
+    specifications: {
       type: mongoose.Schema.Types.String,
     },
     description: {
       type: mongoose.Schema.Types.String,
     },
-    idCategory: {
+    categoryId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'categorys'
+      ref: 'categories'
+    },
+    uomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'uoms'
+    },
+    taxId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'taxs'
     },
   },
 };

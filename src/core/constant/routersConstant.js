@@ -10,6 +10,8 @@ export const GET_BY_ID = "get_by_id";
 export const UPDATE = "update";
 export const AGGREGATE = "aggregate";
 export const LOGIN = "login";
+export const SIGNIN = "signin";
+export const VERIFY = "verify";
 
 export const HTTP_METHOD = {
   GET,
