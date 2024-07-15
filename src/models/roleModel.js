@@ -16,6 +16,10 @@ const model = {
     permissionList: {
       type: mongoose.Schema.Types.Array,
     },
+
+    functionList: {
+      type: mongoose.Schema.Types.Array,
+    },
   },
 };
 

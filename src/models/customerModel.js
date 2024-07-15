@@ -57,12 +57,13 @@ const model = {
       default: false
     },
 
+    avatar: {
+      type: mongoose.Schema.Types.String,
+    },
+
     idRole: {
       type: mongoose.Schema.Types.ObjectId,
-      references: {
-        model: 'roles',
-        key: 'id'
-      }
+      ref: 'roles'
     },
   },
 };

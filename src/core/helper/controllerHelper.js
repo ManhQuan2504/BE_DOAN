@@ -50,7 +50,7 @@ export const createController = async (req, res) => {
 
 export const getListController = async (req, res) => {
   try {
-    console.log("GET LIST CONTROLER");
+    console.log("GET LIST CONTROLLER");
 
     let { modelName, fields, page = 1, perPage = 10 } = req.query;
     page = parseInt(page);
@@ -59,7 +59,7 @@ export const getListController = async (req, res) => {
     perPage = Math.max(perPage, 3);
 
     if (!modelName) {
-      throw new Error("Model is undefined.")
+      throw new Error("Model is undefined.");
     }
 
     const Model = serviceModelList[modelName].collectionName;
@@ -73,13 +73,28 @@ export const getListController = async (req, res) => {
       return acc;
     }, {}) : null;
 
-    const dataObject = await Model.find({ deleted: false }).sort({ createAt: -1 });
+    // Tìm tất cả các trường có tham chiếu để populate
+    const refPopulate = [];
+    for (const field in Model.schema.paths) {
+      const attribute = Model.schema.paths[field];
+      if (attribute?.options?.ref) {
+        refPopulate.push({ path: field, model: attribute.options.ref });
+      }
+    }
+
+    // Truy vấn dữ liệu và populate các trường tham chiếu
+    const dataObject = await Model.find({ deleted: false }, projection)
+      .populate(refPopulate)
+      // .skip(offset)
+      // .limit(limit)
+      .sort({ createdAt: -1 });
 
     res.json({ dataObject });
   } catch (error) {
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
-}
+};
+
 
 export const exportController = async (req, res) => {
   res.send({
@@ -92,22 +107,38 @@ export const getByIdController = async (req, res) => {
   try {
     console.log("GET BY ID CONTROLLER");
 
-    const { modelName, fields } = req.query; // Sửa 'feild' thành 'fields'
+    const { modelName, fields } = req.query;
     const { id } = req.params;
 
     if (!modelName) {
       throw new Error("Model is undefined.");
     }
 
-    const Model = serviceModelList[modelName].collectionName;
+    // Lấy model từ serviceModelList
+    const Model = serviceModelList[modelName]?.collectionName;
+    if (!Model) {
+      throw new Error("Model not found in serviceModelList.");
+    }
 
-    // Nếu có fields, tạo projection object để chỉ định các trường cần lấy
+    // Tạo projection object nếu có fields
     const projection = fields ? fields.replace(/[\[\]" ]/g, '').split(',').reduce((acc, field) => {
       acc[field.trim()] = 1;
       return acc;
-    }, {}) : null;
+    }, {}) : {};
 
-    const dataObject = await Model.findById(id, projection);
+    // Tìm tất cả các trường có tham chiếu để populate
+    const refPopulate = [];
+    for (const field in Model.schema.paths) {
+      const attribute = Model.schema.paths[field];
+      if (attribute?.options?.ref) {
+        refPopulate.push({ path: field, model: attribute.options.ref });
+      }
+    }
+
+    // Truy vấn dữ liệu và populate các trường tham chiếu
+    const dataObject = await Model.findById(id, projection, { deleted: false })
+      .populate(refPopulate)
+      .exec();
 
     if (!dataObject) {
       return res.status(404).json({ error: 'Document not found' });
@@ -115,6 +146,7 @@ export const getByIdController = async (req, res) => {
 
     res.json({ dataObject });
   } catch (error) {
+    console.error('Error in getByIdController:', error);
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 };

@@ -57,10 +57,7 @@ const model = {
 
     roleId: {
       type: mongoose.Schema.Types.ObjectId,
-      references: {
-        model: 'roles',
-        key: 'id'
-      }
+      ref: 'roles',
     },
   },
 };

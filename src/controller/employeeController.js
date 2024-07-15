@@ -9,15 +9,14 @@ export const loginController = async (req, res) => {
     const { employeeCode, password } = data;
 
     if (modelName !== EMPLOYEES) {
-      throw new Error("Model is undefined.");
+      return res.status(401).json({ error: "Model is undefined." });
     }
 
-    const Model = mongoose.model(modelName);
+    const Model = mongoose.model(modelName); // Đảm bảo rằng modelName là 'Employee'
 
     // Tìm người dùng dựa trên employeeCode
     const validateEmployeeCode = (employeeCode.trim()).toLowerCase();
-    console.log("🚀 ~ loginController ~ validateEmployeeCode:", validateEmployeeCode)
-    const existingUser = await Model.findOne({ employeeCode: validateEmployeeCode });
+    const existingUser = await Model.findOne({ employeeCode: validateEmployeeCode }).populate('roleId');
 
     if (!existingUser) {
       throw new Error('Wrong username or password');
@@ -25,24 +24,24 @@ export const loginController = async (req, res) => {
       // So sánh mật khẩu
       const isPasswordValid = await bcrypt.compare(password, existingUser.password);
       if (!isPasswordValid) {
-        throw new Error('Invalid Password');
+        return res.status(401).json({ error: 'Invalid Password' });
       }
-      if (existingUser.isVerified === false) {
-        throw new Error('Email not verified');
+      if (!existingUser.active) {
+        return res.status(401).json({ error: 'Email not active' });
       }
-      if (existingUser.deleted === true) {
-        throw new Error('Account was deleted');
+      if (existingUser.deleted) {
+        return res.status(401).json({ error: 'Account was deleted' });
       }
 
       // Xóa mật khẩu trước khi trả về người dùng
       const userWithoutPassword = existingUser.toObject();
       delete userWithoutPassword.password;
 
-      res.json({dataObject: userWithoutPassword});
+      res.json({ dataObject: userWithoutPassword });
     }
 
   } catch (error) {
-    res.status(500).json({ error: error.message || 'Internal Server Error' });
+    return res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 };
 

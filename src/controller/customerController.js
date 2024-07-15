@@ -6,6 +6,7 @@ import mailer from '../core/config/mailer.js';
 
 const CUSTOMERS = 'customers'
 const CUSTOMERTOKENS = 'customertokens'
+
 export const loginController = async (req, res) => {
   try {
     console.log("LOGIN");
@@ -13,7 +14,7 @@ export const loginController = async (req, res) => {
     const { email, password } = data;
 
     if (modelName !== CUSTOMERS) {
-      throw new Error("Model is undefined.");
+      return res.status(400).json({ error: "Model is undefined." });
     }
 
     const CustomerModel = mongoose.model(modelName);
@@ -22,35 +23,38 @@ export const loginController = async (req, res) => {
     if (customer) {
       const isPasswordValid = await bcrypt.compare(password, customer.password);
       if (!isPasswordValid) {
-        throw new Error('Invalid Password');
-      } if (customer.active == false) {
-        throw new Error('Email not active');
-      } if (customer.deleted == true) {
-        throw new Error('Account was delete');
+        return res.status(401).json({ error: 'Invalid Password' });
       }
+      if (!customer.active) {
+        return res.status(401).json({ error: 'Email not active' });
+      }
+      if (customer.deleted) {
+        return res.status(401).json({ error: 'Account was deleted' });
+      }
+
+      delete customer.password;
+
+      const token = Jwt.sign({ data: customer }, process.env.JWT_SECRET, { expiresIn: '30 days' });
+      const dataObject = {
+        data: customer,
+        token: token
+      };
+
+      return res.json({ dataObject });
     } else {
-      throw new Error("User not already");
+      return res.status(404).json({ error: "User not found" });
     }
-
-    delete customer.password;
-
-    const token = Jwt.sign({ data: customer }, process.env.JWT_SECRET, { expiresIn: '30 days' })
-    const dataObject = {
-      data: customer,
-      token: token
-    }
-
-    res.json({ dataObject });
   } catch (error) {
-    res.status(500).json({ error: error.message || 'Internal Server Error' });
+    return res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 };
+
 
 export const signinController = async (req, res) => {
   try {
     console.log("SIGNIN");
     const { modelName, data } = req.body;
-    const { customerName, email, password } = data;
+    const { customerName, email, password, avatar } = data;
 
     if (modelName !== CUSTOMERS) {
       throw new Error("Model is undefined.");
@@ -66,6 +70,8 @@ export const signinController = async (req, res) => {
 
     const hashPassword = bcrypt.hashSync(password, parseInt(process.env.SALT_ROUND));
     const newCustomer = await CustomerModel.create({
+      active: false,
+      avatar,
       email,
       password: hashPassword,
       customerName,
@@ -84,7 +90,6 @@ export const signinController = async (req, res) => {
     if (!newCustomer || !newToken) {
       throw new Error("Can't create User");
     }
-
 
     const html = `Hello ${email},
     Please verify your account by clicking the link:
@@ -136,7 +141,7 @@ export const verifyController = async (req, res) => {
     const successMessage = `
             <div style="text-align: center; padding: 20px; background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; border-radius: 5px;">
                 <h1>Email verified successfully</h1>
-                <p>Please <a href="http://localhost:2504/login">login</a> to continue.</p>
+                <p>Please <a href="http://localhost:3000/login">login</a> to continue.</p>
             </div>`;
     res.send(successMessage);
 
