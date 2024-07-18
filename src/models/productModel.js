@@ -27,15 +27,22 @@ const model = {
     description: {
       type: mongoose.Schema.Types.String,
     },
-    categoryId: {
+    color: {
+      type: mongoose.Schema.Types.String,
+    },
+    category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'categories'
     },
-    uomId: {
+    brand: {
+      type: mongoose.Schema.Types.String,
+      ref: 'categories'
+    },
+    uom: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'uoms'
     },
-    taxId: {
+    tax: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'taxs'
     },

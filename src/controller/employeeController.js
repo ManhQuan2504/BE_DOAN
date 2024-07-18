@@ -16,7 +16,7 @@ export const loginController = async (req, res) => {
 
     // Tìm người dùng dựa trên employeeCode
     const validateEmployeeCode = (employeeCode.trim()).toLowerCase();
-    const existingUser = await Model.findOne({ employeeCode: validateEmployeeCode }).populate('roleId');
+    const existingUser = await Model.findOne({ employeeCode: validateEmployeeCode }).populate('role');
 
     if (!existingUser) {
       throw new Error('Wrong username or password');

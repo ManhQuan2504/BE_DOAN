@@ -27,10 +27,8 @@ export const createController = async (req, res) => {
     // Kiểm tra các trường có tham chiếu đến các model khác
     for (const field of Object.keys(data)) {
       const attribute = Model.schema.paths[field];
-      console.log("🚀 ~ createController ~ attribute:", attribute)
       if (attribute?.options && attribute?.options?.ref) {
         const referencedModelName = attribute?.options?.ref;
-        console.log("🚀 ~ createController ~ serviceModelList[referencedModelName]:", serviceModelList[referencedModelName])
         const referencedModel = serviceModelList[referencedModelName].collectionName;
         const record = await referencedModel.findById(data[field]);
         if (!record) {

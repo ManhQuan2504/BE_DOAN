@@ -39,6 +39,10 @@ const model = {
       type: mongoose.Schema.Types.String,
     },
 
+    avatar: {
+      type: mongoose.Schema.Types.Array,
+    },
+
     isVerified: {
       type: mongoose.Schema.Types.Boolean,
     },
@@ -55,7 +59,7 @@ const model = {
       type: mongoose.Schema.Types.String,
     },
 
-    roleId: {
+    role: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'roles',
     },
