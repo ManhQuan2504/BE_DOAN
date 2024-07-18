@@ -50,11 +50,11 @@ export const getListController = async (req, res) => {
   try {
     console.log("GET LIST CONTROLLER");
 
-    let { modelName, fields, page = 1, perPage = 10 } = req.query;
+    let { modelName, fields, page = 1, perPage = 10, keySearch } = req.query;
     page = parseInt(page);
     page = Math.max(page, 1);
     perPage = parseInt(perPage);
-    perPage = Math.max(perPage, 3);
+    perPage = Math.max(perPage, 1);
 
     if (!modelName) {
       throw new Error("Model is undefined.");
@@ -80,11 +80,20 @@ export const getListController = async (req, res) => {
       }
     }
 
+    // Tạo điều kiện tìm kiếm
+    const searchCondition = { deleted: false };
+    if (keySearch) {
+      const searchFields = Object.keys(Model.schema.paths).filter(field => Model.schema.paths[field].instance === 'String');
+      searchCondition.$or = searchFields.map(field => ({
+        [field]: { $regex: keySearch, $options: 'i' }
+      }));
+    }
+
     // Truy vấn dữ liệu và populate các trường tham chiếu
-    const dataObject = await Model.find({ deleted: false }, projection)
+    const dataObject = await Model.find(searchCondition, projection)
       .populate(refPopulate)
-      // .skip(offset)
-      // .limit(limit)
+      .skip(offset)
+      .limit(limit)
       .sort({ createdAt: -1 });
 
     res.json({ dataObject });
