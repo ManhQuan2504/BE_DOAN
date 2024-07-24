@@ -17,9 +17,15 @@ const model = {
     },
     price: {
       type: mongoose.Schema.Types.Number,
+      default: 0,
+    },
+    qty: {
+      type: mongoose.Schema.Types.Number,
+      default: 0,
     },
     sold: {
       type: mongoose.Schema.Types.Number,
+      default: 0,
     },
     specifications: {
       type: mongoose.Schema.Types.String,
@@ -32,19 +38,19 @@ const model = {
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'categories'
+      ref: 'categories',
     },
     brand: {
       type: mongoose.Schema.Types.String,
-      ref: 'categories'
+      ref: 'categories',
     },
     uom: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'uoms'
+      ref: 'uoms',
     },
     tax: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'taxs'
+      ref: 'taxs',
     },
   },
 };

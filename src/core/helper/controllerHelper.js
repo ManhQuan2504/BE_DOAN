@@ -50,7 +50,7 @@ export const getListController = async (req, res) => {
   try {
     console.log("GET LIST CONTROLLER");
 
-    let { modelName, fields, page = 1, perPage = 10, keySearch } = req.query;
+    let { modelName, fields, page = 1, perPage = 3000, keySearch } = req.query;
     page = parseInt(page);
     page = Math.max(page, 1);
     perPage = parseInt(perPage);
@@ -298,6 +298,13 @@ export const API = {
 export const API_LIST = {
   CRUD: [
     API.CREATE,
+    // API.AGGREGATE, // [!] cause of router pipeline, "Aggregate" API" must before "GetById API"
+    API.GET_LIST,
+    API.GET_BY_ID,
+    API.UPDATE,
+    API.DELETE,
+  ],
+  RUD: [
     // API.AGGREGATE, // [!] cause of router pipeline, "Aggregate" API" must before "GetById API"
     API.GET_LIST,
     API.GET_BY_ID,

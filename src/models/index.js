@@ -10,6 +10,9 @@ import taxModel from './taxModel.js';
 import productModel from './productModel.js';
 import customerModel from './customerModel.js';
 import customertokenModel from './customertokenModel.js';
+import vendorModel from './vendorModel.js';
+import stockImportModel from './stockImportModel.js';
+import stockExportModel from './stockExportModel.js';
 
 const modelList = [
   // userModel,
@@ -22,6 +25,9 @@ const modelList = [
   productModel,
   customerModel,
   customertokenModel,
+  vendorModel,
+  stockImportModel,
+  stockExportModel,
 ];
 const serviceModelList = registerModelList(modelList);
 

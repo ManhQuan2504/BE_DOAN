@@ -15,7 +15,7 @@ const model = {
     },
     {
       code: CREATE,
-      path: "/createEmployee/",
+      path: "/createEmployee",
       method: HTTP_METHOD.POST,
       controller: createEmployeeController,
     },
