@@ -13,6 +13,7 @@ import customertokenModel from './customertokenModel.js';
 import vendorModel from './vendorModel.js';
 import stockImportModel from './stockImportModel.js';
 import stockExportModel from './stockExportModel.js';
+import salesModel from './salesModel.js';
 
 const modelList = [
   // userModel,
@@ -28,6 +29,7 @@ const modelList = [
   vendorModel,
   stockImportModel,
   stockExportModel,
+  salesModel,
 ];
 const serviceModelList = registerModelList(modelList);
 

@@ -36,6 +36,10 @@ const model = {
     color: {
       type: mongoose.Schema.Types.String,
     },
+    warranty: {
+      type: mongoose.Schema.Types.Number,
+      default: 0,
+    },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'categories',

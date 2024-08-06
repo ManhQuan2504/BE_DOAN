@@ -61,6 +61,10 @@ const model = {
       type: mongoose.Schema.Types.String,
     },
 
+    carts: {
+      type: mongoose.Schema.Types.Array,
+    },
+
     idRole: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'roles'

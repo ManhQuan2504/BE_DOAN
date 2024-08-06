@@ -1,26 +1,20 @@
 import mongoose from "mongoose";
 import { API_LIST } from "../core/helper/controllerHelper.js";
-import { CREATE, HTTP_METHOD, LOGIN } from "../core/constant/routersConstant.js";
-import { createEmployeeController, loginController } from "../controller/employeeController.js"
+import { CREATE, GET, HTTP_METHOD, LOGIN } from "../core/constant/routersConstant.js";
+import { salesAggregate } from "../controller/salesController.js"
 
 const model = {
   modelName: 'sales',
   version: '1',
-  // apiList: [
-  //   {
-  //     code: LOGIN,
-  //     path: "/login/",
-  //     method: HTTP_METHOD.POST,
-  //     controller: loginController,
-  //   },
-  //   {
-  //     code: CREATE,
-  //     path: "/createEmployee/",
-  //     method: HTTP_METHOD.POST,
-  //     controller: createEmployeeController,
-  //   },
-  //   ...API_LIST.CRUD,
-  // ],
+  apiList: [
+    {
+      code: GET,
+      path: "/salesAggregate/",
+      method: HTTP_METHOD.GET,
+      controller: salesAggregate,
+    },
+    ...API_LIST.CRUD,
+  ],
   data: {
     saleNumber: {
       type: mongoose.Schema.Types.String,
@@ -37,21 +31,22 @@ const model = {
     },
 
     customer: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'customers'
+      type: mongoose.Schema.Types.String,
+    },
+
+    phoneNumber: {
+      type: mongoose.Schema.Types.String,
     },
 
     saleDate: {
       type: mongoose.Schema.Types.Date,
+      default: new Date(),
     },
 
     totalAmount: {
       type: mongoose.Schema.Types.Number,
     },
 
-    shipTo: {
-      type: mongoose.Schema.Types.String,
-    },
   },
 };
 

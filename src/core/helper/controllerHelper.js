@@ -88,6 +88,7 @@ export const getListController = async (req, res) => {
         [field]: { $regex: keySearch, $options: 'i' }
       }));
     }
+    console.log("🚀 ~ getListController ~ searchCondition:", searchCondition)
 
     // Truy vấn dữ liệu và populate các trường tham chiếu
     const dataObject = await Model.find(searchCondition, projection)
@@ -310,5 +311,10 @@ export const API_LIST = {
     API.GET_BY_ID,
     API.UPDATE,
     API.DELETE,
+  ],
+  R: [
+    // API.AGGREGATE, // [!] cause of router pipeline, "Aggregate" API" must before "GetById API"
+    API.GET_LIST,
+    API.GET_BY_ID,
   ],
 }

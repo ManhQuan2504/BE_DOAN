@@ -12,33 +12,36 @@ export const loginController = async (req, res) => {
       return res.status(401).json({ error: "Model is undefined." });
     }
 
-    const Model = mongoose.model(modelName); // Đảm bảo rằng modelName là 'Employee'
+    const Model = mongoose.model(modelName);
 
     // Tìm người dùng dựa trên employeeCode
-    const validateEmployeeCode = (employeeCode.trim()).toLowerCase();
+    const validateEmployeeCode = employeeCode.trim().toLowerCase();
     const existingUser = await Model.findOne({ employeeCode: validateEmployeeCode }).populate('role');
+    console.log("🚀 ~ loginController ~ existingUser:", existingUser)
 
     if (!existingUser) {
-      throw new Error('Wrong username or password');
-    } else {
-      // So sánh mật khẩu
-      const isPasswordValid = await bcrypt.compare(password, existingUser.password);
-      if (!isPasswordValid) {
-        return res.status(401).json({ error: 'Invalid Password' });
-      }
-      if (!existingUser.active) {
-        return res.status(401).json({ error: 'Email not active' });
-      }
-      if (existingUser.deleted) {
-        return res.status(401).json({ error: 'Account was deleted' });
-      }
-
-      // Xóa mật khẩu trước khi trả về người dùng
-      const userWithoutPassword = existingUser.toObject();
-      delete userWithoutPassword.password;
-
-      res.json({ dataObject: userWithoutPassword });
+      return res.status(401).json({ error: 'Wrong username or password' });
     }
+
+    // So sánh mật khẩu
+    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid Password' });
+    }
+
+    if (!existingUser.active) {
+      return res.status(401).json({ error: 'Email not active' });
+    }
+
+    if (existingUser.deleted) {
+      return res.status(401).json({ error: 'Account was deleted' });
+    }
+
+    // Xóa mật khẩu trước khi trả về người dùng
+    const userWithoutPassword = existingUser.toObject();
+    delete userWithoutPassword.password;
+
+    res.json({ dataObject: userWithoutPassword });
 
   } catch (error) {
     return res.status(500).json({ error: error.message || 'Internal Server Error' });
@@ -51,12 +54,12 @@ export const createEmployeeController = async (req, res) => {
     const { modelName, data } = req.body;
     const { employeeCode, password } = data;
     if (modelName !== EMPLOYEES) {
-      throw new Error("Model is undefined.")
+      throw new Error("Model is undefined.");
     }
 
     const Model = mongoose.model(modelName);
     const modelAttributes = Object.keys(Model.schema.paths);
-    const invalidFields = Object.keys(data).filter(field => !modelAttributes.includes(field)); // check field data == field model
+    const invalidFields = Object.keys(data).filter(field => !modelAttributes.includes(field));
     if (invalidFields.length > 0) {
       throw new Error(`Invalid fields: ${invalidFields.join(', ')}`);
     }
@@ -73,10 +76,11 @@ export const createEmployeeController = async (req, res) => {
       }
     }
 
-    const validateEmployeeCode = (employeeCode.trim()).toLowerCase();
+    const validateEmployeeCode = employeeCode.trim().toLowerCase();
     const hashPassword = bcrypt.hashSync(password, parseInt(process.env.SALT));
     data.employeeCode = validateEmployeeCode;
     data.password = hashPassword;
+
     const dataObject = new Model(data);
     await dataObject.save();
 
