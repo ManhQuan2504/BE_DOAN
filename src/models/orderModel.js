@@ -6,21 +6,15 @@ import { createEmployeeController, loginController } from "../controller/employe
 const model = {
   modelName: 'orders',
   version: '1',
-  // apiList: [
-  //   {
-  //     code: LOGIN,
-  //     path: "/login/",
-  //     method: HTTP_METHOD.POST,
-  //     controller: loginController,
-  //   },
-  //   {
-  //     code: CREATE,
-  //     path: "/createEmployee/",
-  //     method: HTTP_METHOD.POST,
-  //     controller: createEmployeeController,
-  //   },
-  //   ...API_LIST.CRUD,
-  // ],
+  apiList: [
+    // {
+    //   code: CREATE,
+    //   path: "/createEmployee/",
+    //   method: HTTP_METHOD.POST,
+    //   controller: createEmployeeController,
+    // },
+    ...API_LIST.CRUD,
+  ],
   data: {
     orderNumber: {
       type: mongoose.Schema.Types.String,
@@ -31,12 +25,17 @@ const model = {
       type: mongoose.Schema.Types.Array,
     },
 
+    employee: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'employees'
+    },
+
     customer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'customers'
     },
 
-    saleDate: {
+    orderDate: {
       type: mongoose.Schema.Types.Date,
     },
 
@@ -44,15 +43,19 @@ const model = {
       type: mongoose.Schema.Types.Number,
     },
 
-    shipTo: {
-      type: mongoose.Schema.Types.String,
-    },
-
     paided: {
       type: mongoose.Schema.Types.Number,
     },
 
-    saleState: {
+    shipTo: {
+      type: mongoose.Schema.Types.String,
+    },
+
+    orderState: {
+      type: mongoose.Schema.Types.String,
+    },
+
+    paymentMethod: {
       type: mongoose.Schema.Types.String,
     },
   },

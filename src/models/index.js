@@ -14,6 +14,10 @@ import vendorModel from './vendorModel.js';
 import stockImportModel from './stockImportModel.js';
 import stockExportModel from './stockExportModel.js';
 import salesModel from './salesModel.js';
+import orderModel from './orderModel.js';
+import citiesModel from './citiesModel.js';
+import districtModel from './districtModel.js';
+import wardModel from './wardModel.js';
 
 const modelList = [
   // userModel,
@@ -30,6 +34,10 @@ const modelList = [
   stockImportModel,
   stockExportModel,
   salesModel,
+  orderModel,
+  citiesModel,
+  districtModel,
+  wardModel,
 ];
 const serviceModelList = registerModelList(modelList);
 
