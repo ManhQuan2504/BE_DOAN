@@ -1,3 +1,5 @@
+//http://localhost/v1/orders?modelName=orders&byField={customer=669fc3eb4956aafaf53ff757}   api tìm kiếm theo trường
+
 import mongoose from 'mongoose';
 import serviceModelList from '../../models/index.js';
 import {
@@ -11,6 +13,8 @@ export const createController = async (req, res) => {
     console.log("CREATE CONTROLLER");
     const { modelName, data } = req.body;
     console.log("🚀 ~ createController ~ req.body:", req.body);
+    // const payloadSize = Buffer.byteLength(JSON.stringify(req.body), 'utf8');
+    // console.log("Kích thước của request body là:", payloadSize, "bytes");
 
     if (!modelName) {
       throw new Error("Model is undefined.");
@@ -50,7 +54,7 @@ export const getListController = async (req, res) => {
   try {
     console.log("GET LIST CONTROLLER");
 
-    let { modelName, fields, page = 1, perPage = 3000, keySearch } = req.query;
+    let { modelName, fields, page = 1, perPage = 3000, keySearch, byField } = req.query;
     page = parseInt(page);
     page = Math.max(page, 1);
     perPage = parseInt(perPage);
@@ -88,7 +92,28 @@ export const getListController = async (req, res) => {
         [field]: { $regex: keySearch, $options: 'i' }
       }));
     }
-    console.log("🚀 ~ getListController ~ searchCondition:", searchCondition)
+
+    // Xử lý điều kiện lọc theo trường 'byField' nếu có
+    if (byField) {
+      console.log("🚀 ~ getListController ~ byField:", byField);
+      try {
+        // Phân tích cú pháp chuỗi byField thành đối tượng
+        const byFieldObj = JSON.parse(byField); // Chuyển đổi chuỗi JSON thành đối tượng
+        Object.keys(byFieldObj).forEach(key => {
+          const value = byFieldObj[key];
+          // Kiểm tra xem giá trị có phải là ObjectId không
+          if (mongoose.Types.ObjectId.isValid(value)) {
+            byFieldObj[key] = new mongoose.Types.ObjectId(value);
+          }
+        });
+        Object.assign(searchCondition, byFieldObj);
+      } catch (error) {
+        console.error("Error parsing byField:", error);
+        throw new Error("Invalid byField format.");
+      }
+    }
+
+    console.log("🚀 ~ getListController ~ searchCondition:", searchCondition);
 
     // Truy vấn dữ liệu và populate các trường tham chiếu
     const dataObject = await Model.find(searchCondition, projection)
@@ -102,6 +127,9 @@ export const getListController = async (req, res) => {
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 };
+
+
+
 
 
 export const exportController = async (req, res) => {

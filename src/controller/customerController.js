@@ -54,7 +54,7 @@ export const signinController = async (req, res) => {
   try {
     console.log("SIGNIN");
     const { modelName, data } = req.body;
-    const { customerName, email, password, avatar } = data;
+    const { customerName, email, password, avatar, phoneNumber } = data;
 
     if (modelName !== CUSTOMERS) {
       throw new Error("Model is undefined.");
@@ -75,8 +75,10 @@ export const signinController = async (req, res) => {
       email,
       password: hashPassword,
       customerName,
+      phoneNumber,
       roleId: VALUE_CUS.ID,
     })
+    console.log("🚀 ~ signinController ~ newCustomer:", newCustomer)
 
     delete newCustomer.password;
     const subject = "Hello ✔";

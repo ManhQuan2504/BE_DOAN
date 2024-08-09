@@ -58,6 +58,10 @@ const model = {
     paymentMethod: {
       type: mongoose.Schema.Types.String,
     },
+
+    dataPayment: {
+      type: mongoose.Schema.Types.Array,
+    },
   },
 };
 

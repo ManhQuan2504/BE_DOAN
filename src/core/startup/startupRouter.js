@@ -8,11 +8,11 @@ const initCreateRouter = (app) => {
   // app.use(Express.static(path.join(__dirname, '../uploads')));
 
   app.use(bodyParser.json({
-    limit: '50mb',
+    limit: '500mb',
   }));
 
   app.use(bodyParser.urlencoded({
-    limit: '50mb',
+    limit: '500mb',
     extended: false,
     parameterLimit: 50000
   }));

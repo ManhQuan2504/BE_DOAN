@@ -6,6 +6,7 @@ import path, { dirname } from 'path';
 
 import { initConnectToDB } from './core/startup/startupDB.js'
 import { initCreateRouter } from './core/startup/startupRouter.js'; // Sửa tên hàm này thành initCreateRouter
+import bodyParser from "body-parser";
 
 const app = Express();
 
@@ -18,8 +19,10 @@ app.use(cors());
 // app.use(Express.static(path.join(__dirname, '../uploads/')));
 app.use('/media', Express.static(path.join(__dirname, '../uploads')));
 
-app.use(Express.json());
-app.use(Express.urlencoded({ extended: true }));
+// app.use(Express.json());
+// app.use(Express.urlencoded({ extended: true, limit: '500mb' }));
+app.use(bodyParser.json({ limit: '500mb' })); // Giới hạn 10MB
+app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
 
 (async () => {
   try {
