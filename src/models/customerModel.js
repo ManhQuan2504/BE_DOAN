@@ -65,6 +65,10 @@ const model = {
       type: mongoose.Schema.Types.Array,
     },
 
+    wishList: {
+      type: mongoose.Schema.Types.Array,
+    },
+
     idRole: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'roles'

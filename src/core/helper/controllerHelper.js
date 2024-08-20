@@ -1,4 +1,5 @@
 //http://localhost/v1/orders?modelName=orders&byField={customer=669fc3eb4956aafaf53ff757}   api tìm kiếm theo trường
+//http://localhost/v1/products?modelName=products&byField=%7B%22category%22%3A%2266744456a05d2d473e7b7646%22%7D  url trong postman
 
 import mongoose from 'mongoose';
 import serviceModelList from '../../models/index.js';
@@ -127,10 +128,6 @@ export const getListController = async (req, res) => {
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 };
-
-
-
-
 
 export const exportController = async (req, res) => {
   res.send({

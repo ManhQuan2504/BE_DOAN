@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
 import { API_LIST } from "../core/helper/controllerHelper.js";
-import { CREATE, HTTP_METHOD, LOGIN } from "../core/constant/routersConstant.js";
-import { createEmployeeController, loginController } from "../controller/employeeController.js"
+import { CREATE, GET, HTTP_METHOD, LOGIN } from "../core/constant/routersConstant.js";
+import { ordersAggregate } from "../controller/orderController.js";
 
 const model = {
   modelName: 'orders',
   version: '1',
   apiList: [
-    // {
-    //   code: CREATE,
-    //   path: "/createEmployee/",
-    //   method: HTTP_METHOD.POST,
-    //   controller: createEmployeeController,
-    // },
+    {
+      code: GET,
+      path: "/orderAggregate/",
+      method: HTTP_METHOD.GET,
+      controller: ordersAggregate,
+    },
     ...API_LIST.CRUD,
   ],
   data: {

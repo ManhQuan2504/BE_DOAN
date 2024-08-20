@@ -21,8 +21,8 @@ app.use('/media', Express.static(path.join(__dirname, '../uploads')));
 
 // app.use(Express.json());
 // app.use(Express.urlencoded({ extended: true, limit: '500mb' }));
-app.use(bodyParser.json({ limit: '500mb' })); // Giới hạn 10MB
-app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
+app.use(bodyParser.json({ limit: 'Infinity' })); // Giới hạn 10MB
+app.use(bodyParser.urlencoded({ limit: 'Infinity', extended: true }));
 
 (async () => {
   try {
