@@ -32,10 +32,10 @@ export const ordersAggregate = async (req, res) => {
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } },
-          totalOrders: { $sum: { $multiply: ["$productList.orderQty", "$productList.price"] } }
+          totalOrders: { $sum: { $multiply: ["$productList.count", "$productList.price"] } }
         }
       },
-      { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } } // Sắp xếp theo ngày tăng dần
     ]);
 
     const reportByProduct = await OrdersModel.aggregate([
@@ -46,8 +46,8 @@ export const ordersAggregate = async (req, res) => {
           _id: "$productList.product",
           productCode: { $first: "$productList.productCode" },
           productName: { $first: "$productList.productName" },
-          totalOrders: { $sum: { $multiply: ["$productList.orderQty", "$productList.price"] } },
-          totalQuantity: { $sum: "$productList.orderQty" }
+          totalOrders: { $sum: { $multiply: ["$productList.count", "$productList.price"] } },
+          totalQuantity: { $sum: "$productList.count" }
         }
       },
       { $sort: { productName: 1 } }

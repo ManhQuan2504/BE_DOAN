@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 import { API_LIST } from "../core/helper/controllerHelper.js";
-import { HTTP_METHOD, LOGIN, SIGNIN, VERIFY } from "../core/constant/routersConstant.js";
+import { HTTP_METHOD, LOGIN, SIGNIN, UPDATE, VERIFY } from "../core/constant/routersConstant.js";
 
-import { loginController, signinController, verifyController } from "../controller/customerController.js"
+import { loginController, signinController, updateCustomerController, verifyController } from "../controller/customerController.js"
 
 const model = {
   modelName: 'customers',
@@ -27,7 +27,13 @@ const model = {
       path: "/verifyMail/:id/:token",
       method: HTTP_METHOD.GET,
       controller: verifyController,
-    }
+    },
+    {
+      code: UPDATE,
+      path: "/updateCustomer/:id",
+      method: HTTP_METHOD.PUT,
+      controller: updateCustomerController,
+    },
   ],
 
   data: {
@@ -58,7 +64,7 @@ const model = {
     },
 
     avatar: {
-      type: mongoose.Schema.Types.String,
+      type: mongoose.Schema.Types.Array,
     },
 
     carts: {

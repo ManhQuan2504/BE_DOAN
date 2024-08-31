@@ -64,7 +64,7 @@ export const exportStock = async (req, res) => {
       return res.status(404).json({ error: "Stock import record not found." });
     }
 
-    stockExport.stockExportStatus = "Đã nhập kho";
+    stockExport.stockExportStatus = "Đã xuất kho";
     await stockExport.save();
 
     const productUpdate = await ProductModel.findById(product);

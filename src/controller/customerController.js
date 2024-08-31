@@ -152,3 +152,60 @@ export const verifyController = async (req, res) => {
     res.send(errorMessage);
   }
 };
+
+export const updateCustomerController = async (req, res) => {
+  try {
+    console.log("UPDATE CUSTOMER");
+    const { modelName, id, data } = req.body;
+    console.log("🚀 ~ updateCustomerController ~ data:", data)
+    const { password = null } = data;
+
+    if (modelName !== CUSTOMERS) {
+      throw new Error("Model is undefined.");
+    }
+
+    const Model = mongoose.model(modelName);
+    const modelAttributes = Object.keys(Model.schema.paths);
+    const invalidFields = Object.keys(data).filter(field => !modelAttributes.includes(field));
+
+    if (invalidFields.length > 0) {
+      throw new Error(`Invalid fields: ${invalidFields.join(', ')}`);
+    }
+
+    // Kiểm tra các trường có tham chiếu đến các model khác
+    for (const field of Object.keys(data)) {
+      const attribute = Model.schema.paths[field];
+      if (attribute.options && attribute.options.ref) {
+        const referencedModel = mongoose.model(attribute.options.ref);
+        const record = await referencedModel.findById(data[field]);
+        if (!record) {
+          throw new Error(`Referenced record not found for field '${field}'`);
+        }
+      }
+    }
+
+    const existingUser = await Model.findOne({ _id: id });
+
+    if (!existingUser) {
+      return res.status(401).json({ error: 'Customer not found' });
+    }
+
+    // So sánh mật khẩu nếu mật khẩu được cung cấp
+    if (password) {
+      const hashPassword = bcrypt.hashSync(password, parseInt(process.env.SALT));
+      data.password = hashPassword;
+    }
+
+    // Cập nhật thông tin nhân viên
+    const updatedEmployee = await Model.findByIdAndUpdate(id, data, { new: true });
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ error: 'Employee not found for update' });
+    }
+
+    res.json({ dataObject: updatedEmployee });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
+  }
+};

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { API_LIST } from "../core/helper/controllerHelper.js";
-import { CREATE, HTTP_METHOD, LOGIN } from "../core/constant/routersConstant.js";
-import { createEmployeeController, loginController } from "../controller/employeeController.js"
+import { CREATE, HTTP_METHOD, LOGIN, UPDATE } from "../core/constant/routersConstant.js";
+import { createEmployeeController, loginController, updateEmployeeController } from "../controller/employeeController.js"
 
 const model = {
   modelName: 'employees',
@@ -18,6 +18,12 @@ const model = {
       path: "/createEmployee",
       method: HTTP_METHOD.POST,
       controller: createEmployeeController,
+    },
+    {
+      code: UPDATE,
+      path: "/updateEmployee/:id",
+      method: HTTP_METHOD.PUT,
+      controller: updateEmployeeController,
     },
     ...API_LIST.CRUD,
   ],
@@ -48,7 +54,7 @@ const model = {
     },
 
     phoneNumber: {
-      type: mongoose.Schema.Types.Number,
+      type: mongoose.Schema.Types.String,
     },
 
     identityNumber: {
