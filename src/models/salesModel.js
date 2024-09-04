@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { API_LIST } from "../core/helper/controllerHelper.js";
-import { CREATE, GET, HTTP_METHOD, LOGIN } from "../core/constant/routersConstant.js";
-import { salesAggregate } from "../controller/salesController.js"
+import { CREATE, GET, HTTP_METHOD, LOGIN, POST } from "../core/constant/routersConstant.js";
+import { fakeSales, salesAggregate } from "../controller/salesController.js"
 
 const model = {
   modelName: 'sales',
@@ -12,6 +12,12 @@ const model = {
       path: "/salesAggregate/",
       method: HTTP_METHOD.GET,
       controller: salesAggregate,
+    },
+    {
+      code: POST,
+      path: "/fakeSales/",
+      method: HTTP_METHOD.POST,
+      controller: fakeSales,
     },
     ...API_LIST.CRUD,
   ],
@@ -45,6 +51,10 @@ const model = {
 
     totalAmount: {
       type: mongoose.Schema.Types.Number,
+    },
+
+    imported: {
+      type: mongoose.Schema.Types.Boolean,
     },
 
   },

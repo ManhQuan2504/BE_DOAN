@@ -45,7 +45,7 @@ const model = {
       ref: 'categories',
     },
     brand: {
-      type: mongoose.Schema.Types.String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'categories',
     },
     uom: {

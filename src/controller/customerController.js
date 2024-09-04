@@ -209,3 +209,43 @@ export const updateCustomerController = async (req, res) => {
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 };
+
+export const changePasswordCustomerController = async (req, res) => {
+  try {
+    console.log("CHANGE PASSWORD CUSTOMER");
+    const { modelName, id, data } = req.body;
+    const { password = null, newPassword = null } = data;
+
+    if (modelName !== CUSTOMERS) {
+      throw new Error("Model is undefined.");
+    }
+
+    const Model = mongoose.model(modelName);
+
+    const existingUser = await Model.findOne({ _id: id });
+
+    if (!existingUser) {
+      return res.status(401).json({ error: 'Customer not found' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid Password' });
+    }
+
+    const hashNewPassword = bcrypt.hashSync(newPassword, parseInt(process.env.SALT));
+    data.password = hashNewPassword;
+
+    // Cập nhật thông tin nhân viên
+    const updatedEmployee = await Model.findByIdAndUpdate(id, data, { new: true });
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ error: 'Employee not found for update' });
+    }
+
+    res.json({ dataObject: updatedEmployee });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
+  }
+};
