@@ -12,6 +12,10 @@ const model = {
       type: mongoose.Schema.Types.String,
     },
 
+    vendorShortName: {
+      type: mongoose.Schema.Types.String,
+    },
+
     address: {
       type: mongoose.Schema.Types.String,
     },
@@ -19,6 +23,19 @@ const model = {
     phoneNumber: {
       type: mongoose.Schema.Types.String,
     },
+
+    email: {
+      type: mongoose.Schema.Types.String,
+    },
+
+    vendorTaxCode: {
+      type: mongoose.Schema.Types.String,
+    },
+
+    brcCode: {
+      type: mongoose.Schema.Types.String,
+    },
+
   },
 };
 

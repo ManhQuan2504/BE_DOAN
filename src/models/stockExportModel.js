@@ -57,6 +57,10 @@ const model = {
     cost: {
       type: mongoose.Schema.Types.Number,
     },
+
+    note: {
+      type: mongoose.Schema.Types.String,
+    },
   },
 };
 

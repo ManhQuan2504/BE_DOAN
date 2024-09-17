@@ -6,7 +6,7 @@ const model = {
   data: {
     productCode: {
       type: mongoose.Schema.Types.String,
-      unique: true,
+      // unique: true,
     },
 
     productName: {

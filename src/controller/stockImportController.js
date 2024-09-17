@@ -6,7 +6,7 @@ const PRODUCTS = 'products';
 export const createStockImport = async (req, res) => {
   try {
     const { modelName, data } = req.body;
-    const { stockImportCode, employee, vendor, product, color, qty, cost } = data;
+    const { stockImportCode, employee, vendor, product, color, qty, cost, note } = data;
 
     console.log("🚀 ~ createStockImport ~ data:", data);
 
@@ -31,6 +31,7 @@ export const createStockImport = async (req, res) => {
       color,
       qty,
       cost,
+      note,
     });
 
     await newStockImport.save();
